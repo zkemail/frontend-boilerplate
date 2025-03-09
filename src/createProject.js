@@ -65,6 +65,31 @@ export async function createProject(answers) {
     });
   }
 
+  // Add template page content
+  const pageTemplate = `export default function Home() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
+        <h1 className="text-4xl font-bold text-center mb-8">
+          Welcome to your ZK Email Project
+        </h1>
+        
+        <div className="bg-white/5 p-8 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-semibold mb-4">Getting Started</h2>
+          Edit{" "}
+          <code className="bg-gray-800 px-2 py-1 rounded">
+            src/app/page.tsx
+          </code>
+        </div>
+      </div>
+    </main>
+  )
+}`;
+
+  // Write the template to the page.tsx file
+  const pagePath = path.join(process.cwd(), "src", "app", "page.tsx");
+  await fs.writeFile(pagePath, pageTemplate);
+
   console.log(chalk.green("Project setup complete!"));
   console.log(chalk.yellow(`\nRun the following to start your project:\n`));
   console.log(chalk.cyan(`cd ${projectName} && npm run dev`));
