@@ -1,24 +1,39 @@
 import { execa } from "execa";
 import fs from "fs-extra";
-import path from "path";
 import chalk from "chalk";
+import path from "path";
 
 export async function createProject(answers) {
-  const projectName = "my-next-app";
+  const { projectName, language } = answers;
+
   console.log(chalk.green(`Creating Next.js project: ${projectName}...`));
 
-  // Step 1: Run create-next-app
-  await execa(
-    "npx",
-    [
-      "create-next-app@latest",
-      projectName,
-      answers.language === "TypeScript" ? "--ts" : "--js",
-    ],
-    {
-      stdio: "inherit",
-    }
-  );
+  // Step 1: Construct `npx create-next-app` command with flags
+  const flags = [
+    projectName,
+    "--language",
+    language,
+    "--use-npm", // Default to npm; you can modify this to allow selection
+    "--eslint",
+    "true",
+    "--tailwind",
+    "true",
+    "--typescript",
+    "true",
+    "--src-dir",
+    "true",
+    "--app",
+    "true",
+    "--import-alias",
+    "@/*",
+    "--turbopack",
+    "false",
+    "--no-install", // We will handle installations manually
+  ];
+
+  await execa("npx", ["create-next-app@latest", ...flags], {
+    stdio: "inherit",
+  });
 
   // Step 2: Change directory
   process.chdir(projectName);
@@ -27,34 +42,25 @@ export async function createProject(answers) {
   const dependencies = [];
   const devDependencies = [];
 
-  if (answers.tailwind) {
-    dependencies.push("tailwindcss", "postcss", "autoprefixer");
-  }
-
-  if (answers.eslint) {
-    devDependencies.push("eslint", "eslint-config-next");
-  }
-
-  if (answers.prettier) {
-    devDependencies.push("prettier");
-  }
+  dependencies.push("tailwindcss", "postcss", "autoprefixer");
+  devDependencies.push("eslint", "eslint-config-next");
 
   if (answers.zkSdk) {
-    devDependencies.push("@zk-email/sdk");
+    dependencies.push("@zk-email/sdk");
   }
 
   if (answers.relayerUtils) {
-    devDependencies.push("@zk-email/relayer-utils");
+    dependencies.push("@zk-email/relayer-utils");
   }
 
   if (dependencies.length) {
-    console.log(chalk.blue("Installing dependencies..."));
-    await execa("npm", ["install", ...dependencies], { stdio: "inherit" });
+    console.log(chalk.blue("Installing dependencies...", dependencies));
+    await execa("yarn", ["add", ...dependencies], { stdio: "inherit" });
   }
 
   if (devDependencies.length) {
-    console.log(chalk.blue("Installing dev dependencies..."));
-    await execa("npm", ["install", "-D", ...devDependencies], {
+    console.log(chalk.blue("Installing dev dependencies...", devDependencies));
+    await execa("yarn", ["add", "-D", ...devDependencies], {
       stdio: "inherit",
     });
   }

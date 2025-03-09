@@ -5,6 +5,11 @@ import { createProject } from "../src/createProject.js";
 
 const questions = [
   {
+    type: "input",
+    name: "projectName",
+    message: "Enter your project name:",
+  },
+  {
     type: "list",
     name: "language",
     message: "Choose your language:",
@@ -12,28 +17,13 @@ const questions = [
   },
   {
     type: "confirm",
-    name: "tailwind",
-    message: "Do you want to install Tailwind CSS?",
+    name: "zkSdk",
+    message: "Do you want to add zkSdk?",
   },
   {
     type: "confirm",
-    name: "eslint",
-    message: "Do you want to set up ESLint?",
-  },
-  {
-    type: "confirm",
-    name: "prettier",
-    message: "Do you want to set up Prettier?",
-  },
-  {
-    type: "confirm",
-    name: "zk-sdk",
-    message: "Do you want to add zk-sdk?",
-  },
-  {
-    type: "confirm",
-    name: "relayer-utils",
-    message: "Do you want to add relayer-utils?",
+    name: "relayerUtils",
+    message: "Do you want to add relayerUtils?",
   },
 ];
 
