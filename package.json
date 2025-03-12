@@ -1,5 +1,5 @@
 {
-  "name": "next-boilerplate-generator",
+  "name": "zkemail-frontend-boilerplate",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "create-next-boilerplate": "bin/index.js"
+    "create-zkemail-frontend-boilerplate": "bin/index.js"
   },
   "keywords": [],
   "author": "",
