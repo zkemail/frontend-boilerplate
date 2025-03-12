@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-const relayerUtils = require("@zk-email/relayer-utils");
+import * as relayerUtils from "@zk-email/relayer-utils";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,7 +17,7 @@ export default async function handler(
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const accountCode = await relayerUtils.genAccountCode();
+    const accountCode = await relayerUtils.generateAccountCode();
 
     res.status(200).json(accountCode);
   } catch (error) {
