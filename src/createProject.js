@@ -42,7 +42,34 @@ export async function createProject(answers) {
   const dependencies = [];
   const devDependencies = [];
 
-  dependencies.push("tailwindcss", "postcss", "autoprefixer");
+  // Add shadcn dependencies
+  dependencies.push(
+    "tailwindcss",
+    "postcss",
+    "autoprefixer",
+    "@radix-ui/react-slot",
+    "class-variance-authority",
+    "clsx",
+    "tailwind-merge",
+    "@radix-ui/react-alert-dialog",
+    "@radix-ui/react-checkbox",
+    "@radix-ui/react-dropdown-menu",
+    "@radix-ui/react-icons",
+    "@radix-ui/react-label",
+    "@radix-ui/react-radio-group",
+    "@radix-ui/react-select",
+    "@radix-ui/react-separator",
+    "@radix-ui/react-slot",
+    "@radix-ui/react-switch",
+    "@radix-ui/react-tooltip",
+    "@react-oauth/google",
+    "@zk-email/sdk",
+    "framer-motion",
+    "lottie-web",
+    "lucide-react",
+    "react-toastify",
+    "tailwindcss-animate"
+  );
   devDependencies.push("eslint", "eslint-config-next");
 
   if (answers.zkSdk) {
@@ -86,31 +113,41 @@ export async function createProject(answers) {
   )
 }`;
 
+  // Remove leading slash on Windows
+  const currentDir = path.dirname(new URL(import.meta.url).pathname);
+  const normalizedDir =
+    process.platform === "win32" ? currentDir.slice(1) : currentDir;
+
   // Add relayer API template if relayerUtils is selected
   if (answers.relayerUtils) {
-    const currentDir = path.dirname(new URL(import.meta.url).pathname);
-    // Remove leading slash on Windows
-    const normalizedDir = process.platform === 'win32' ? currentDir.slice(1) : currentDir;
-    
     const relayerApiTemplate = await fs.readFile(
-      path.join(normalizedDir, 'templates', 'relayerApi.ts'),
-      'utf-8'
+      path.join(normalizedDir, "templates", "relayerApi.ts"),
+      "utf-8"
     );
-    
+
     // Create lib directory
     const libDir = path.join(process.cwd(), "src", "lib");
     await fs.ensureDir(libDir);
-    
+
     // Write the relayer API template
     const relayerApiPath = path.join(libDir, "relayerApi.ts");
     await fs.writeFile(relayerApiPath, relayerApiTemplate);
-    
+
     console.log(chalk.blue("Created relayer API utility file"));
   }
 
   // Write the template to the page.tsx file
   const pagePath = path.join(process.cwd(), "src", "app", "page.tsx");
   await fs.writeFile(pagePath, pageTemplate);
+
+  const source = path.join(normalizedDir, "boilerplateContent"); // Folder to copy
+  const destination = path.join(process.cwd()); // Destination folder
+
+  console.log(source, destination);
+
+  fs.copy(source, destination)
+    .then(() => console.log("Boilerplate copied successfully!"))
+    .catch((err) => console.error("Error copying boilerplate:", err));
 
   console.log(chalk.green("Project setup complete!"));
   console.log(chalk.yellow(`\nRun the following to start your project:\n`));
