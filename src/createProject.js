@@ -86,6 +86,28 @@ export async function createProject(answers) {
   )
 }`;
 
+  // Add relayer API template if relayerUtils is selected
+  if (answers.relayerUtils) {
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+    // Remove leading slash on Windows
+    const normalizedDir = process.platform === 'win32' ? currentDir.slice(1) : currentDir;
+    
+    const relayerApiTemplate = await fs.readFile(
+      path.join(normalizedDir, 'templates', 'relayerApi.ts'),
+      'utf-8'
+    );
+    
+    // Create lib directory
+    const libDir = path.join(process.cwd(), "src", "lib");
+    await fs.ensureDir(libDir);
+    
+    // Write the relayer API template
+    const relayerApiPath = path.join(libDir, "relayerApi.ts");
+    await fs.writeFile(relayerApiPath, relayerApiTemplate);
+    
+    console.log(chalk.blue("Created relayer API utility file"));
+  }
+
   // Write the template to the page.tsx file
   const pagePath = path.join(process.cwd(), "src", "app", "page.tsx");
   await fs.writeFile(pagePath, pageTemplate);
