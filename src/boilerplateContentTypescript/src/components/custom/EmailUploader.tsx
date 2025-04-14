@@ -13,21 +13,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { AnimatePresence, motion } from "framer-motion";
 import Loader from "@/components/ui/loader";
 import { decodeMimeEncodedText, formatDate, getFileContent } from "@/lib/utils";
-import sdk from "@/lib/sdk";
-import { Blueprint, FetchEmailOptions, Gmail, Outlook } from "@zk-email/sdk";
 
 const EmailUploader = ({
   onFileUpload,
 }: {
   onFileUpload: (file: File) => void;
 }) => {
-  const gmail = new Gmail();
-  const outlook = new Outlook();
-
-  const [loginMode, setLoginMode] = useState<"gmail" | "file" | "outlook">(
-    "gmail"
-  );
-  const [blueprint, setBlueprint] = useState<Blueprint | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [fetchedEmails, setFetchedEmails] = useState<RawEmailResponse[]>([]);
   const [isFetchEmailLoading, setIsFetchEmailLoading] = useState(false);
@@ -69,17 +60,6 @@ const EmailUploader = ({
     checkFileValidity(file);
   }, [file]);
 
-  const fetchBlueprint = async () => {
-    const blueprint = await sdk.getBlueprintById(
-      "0fe3a285-dc6e-4843-b9f6-5f3c27cd3847"
-    );
-    setBlueprint(blueprint);
-  };
-
-  useEffect(() => {
-    fetchBlueprint();
-  }, []);
-
   const handleFetchEmails = async () => {
     if (!googleAuthToken) return;
 
@@ -120,64 +100,6 @@ const EmailUploader = ({
     }
   };
 
-  const handleGoogleLogin = async () => {
-    if (!blueprint) return;
-    setLoginMode("gmail");
-    await gmail.authorize({
-      prompt: "consent",
-      access_type: "online",
-    });
-
-    const queryOptions: FetchEmailOptions = {
-      replaceQuery: "",
-    };
-
-    const emails = await gmail.fetchEmails([blueprint], queryOptions);
-    console.log("emails: ", emails);
-
-    setFetchedEmails([...fetchedEmails, ...emails]);
-
-    try {
-    } catch (err) {
-      console.error("Failed to login with google: ", err);
-    }
-  };
-
-  const handleFetchMoreGmailEmails = async () => {
-    setIsFetchEmailLoading(true);
-    const emails = await gmail.fetchMore();
-    console.log("emails: ", emails);
-
-    setFetchedEmails([...fetchedEmails, ...emails]);
-    setIsFetchEmailLoading(false);
-  };
-
-  const handleOutlookLogin = async () => {
-    setLoginMode("outlook");
-    if (!blueprint) return;
-
-    await outlook.authorize();
-
-    const emails = await outlook.fetchEmails([blueprint]);
-
-    setFetchedEmails([...fetchedEmails, ...emails]);
-
-    try {
-    } catch (err) {
-      console.error("Failed to login with google: ", err);
-    }
-  };
-
-  console.log("fetching more emails", gmail);
-  const handleFetchMoreOutlookEmails = async () => {
-    setIsFetchEmailLoading(true);
-    const emails = await outlook.fetchMore();
-    console.log("emails: ", emails);
-
-    setFetchedEmails([...fetchedEmails, ...emails]);
-    setIsFetchEmailLoading(false);
-  };
-
   useEffect(() => {
     if (googleAuthToken?.access_token) {
       handleFetchEmails();
@@ -198,40 +120,30 @@ const EmailUploader = ({
           your email data.
         </p>
       </div>
-      <div className="flex flex-row gap-2">
-        <Button
-          className="flex w-max items-center gap-2"
-          onClick={handleGoogleLogin}
-        >
-          <Image
-            src="/assets/GoogleLogo.svg"
-            alt="Google Logo"
-            width={16}
-            height={16}
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-            }}
-          />
-          Connect Gmail Account
-        </Button>
-        <Button
-          className="flex w-max items-center gap-2"
-          onClick={handleOutlookLogin}
-        >
-          <Image
-            src="/assets/OutlookLogo.svg"
-            alt="Outlook Logo"
-            width={16}
-            height={16}
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-            }}
-          />
-          Connect Outlook Account
-        </Button>
-      </div>
+      <Button
+        className="flex w-max items-center gap-2"
+        onClick={googleLogIn(() => {
+          setIsFetchEmailLoading(true);
+          // setTimeout(() => {
+          //   handleFetchEmails();
+          // }, 2000);
+
+          // handleFetchEmails();
+          setFile(null);
+        })}
+      >
+        <Image
+          src="/assets/GoogleLogo.svg"
+          alt="Google Logo"
+          width={16}
+          height={16}
+          style={{
+            maxWidth: "100%",
+            height: "auto",
+          }}
+        />
+        Connect Gmail Account
+      </Button>
       <div className="flex w-full items-center">
         <Separator className="flex-1" />
         <span className="mx-3 text-base font-semibold text-grey-700">OR</span>
@@ -350,11 +262,7 @@ const EmailUploader = ({
           <Button
             variant="ghost"
             className="gap-2 text-grey-700"
-            onClick={
-              loginMode === "gmail"
-                ? handleFetchMoreGmailEmails
-                : handleFetchMoreOutlookEmails
-            }
+            onClick={handleFetchEmails}
             disabled={isFetchEmailLoading}
           >
             <Image
