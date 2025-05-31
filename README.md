@@ -27,12 +27,18 @@ cd frontend-boilerplate
 yarn install  # or npm install
 ```
 
-### Running the Development Server
-Start the local development server:
+### Linking this boilerplate on your package manager
+
 ```sh
-yarn dev  # or npm run dev
+yarn link
 ```
-The application will be available at `http://localhost:3000/`.
+
+### Creating a new project
+
+```sh
+create-zkemail-frontend-boilerplate
+```
 
 ## Contributing
+
 We welcome contributions! Feel free to submit issues and pull requests.
