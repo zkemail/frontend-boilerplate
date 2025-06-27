@@ -10,7 +10,7 @@ import DragAndDropFile from "./DragAndDropFile";
 import { RawEmailResponse } from "@/hooks/useGmailClient";
 import { fetchEmailList, fetchEmailsRaw } from "@/hooks/useGmailClient";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import Loader from "@/components/ui/loader";
 import { decodeMimeEncodedText, formatDate, getFileContent } from "@/lib/utils";
 
@@ -244,7 +244,7 @@ const EmailUploader = ({
                   <RadioGroupItem
                     value={email.decodedContents}
                     id={email.emailMessageId}
-                    // disabled={!email.valid}
+                  // disabled={!email.valid}
                   />
                   <div>
                     <div>{formatDate(email.internalDate).split(",")[0]}</div>

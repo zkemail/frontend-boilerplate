@@ -64,7 +64,7 @@ export async function createProject(answers) {
     "@radix-ui/react-tooltip",
     "@react-oauth/google",
     "@zk-email/sdk",
-    "framer-motion",
+    "motion",
     "lottie-web",
     "lucide-react",
     "react-toastify",
